@@ -1,41 +1,42 @@
 from pathlib import Path
-from openpecha.utils import read_json, write_json
+from utils import read_json, write_json
+from typing import Dict, List 
 
 
-def get_root_text(root_json):
-    root_segments = []
-    root_text = root_json["target"]["books"][0]["content"]
-    for chapter in root_text:
-        for root_segment in chapter:
-            root_segments.append(root_segment)
-    return root_segments
+def get_root_text(root_json:Dict) -> List:
+    segments = []
+    content = root_json["target"]["books"][0]["content"]
+    for chapter_content in content:
+        for segment in chapter_content:
+            segments.append(segment)
+    return segments
 
 def get_root_translation_text(root_json):
-    root_segments = []
-    root_text = root_json["source"]["books"][0]["content"]
-    for chapter in root_text:
-        for root_segment in chapter:
-            root_segments.append(root_segment)
-    return root_segments
+    segments = []
+    content = root_json["source"]["books"][0]["content"]
+    for chapter_content in content:
+        for segment in chapter_content:
+            segments.append(segment)
+    return segments
 
 
 def get_commentary_text(commentary_path):
-    commentary_segments = []
+    segments = []
     commentary_json = read_json(commentary_path)
-    commentary_text = commentary_json["target"]["books"][0]["content"]
-    for chapter in commentary_text:
-        for commentary_segment in chapter:
-            if len(commentary_segment) != 0:
-                text = commentary_segment[0]
+    content = commentary_json["target"]["books"][0]["content"]
+    for chapter_content in content:
+        for segment in chapter_content:
+            if len(segment) != 0:
+                text = segment[0]
             else:
                 text = ""
-            commentary_segments.append(text)
+            segments.append(text)
 
     root_len = 926
-    missing_segments = (root_len - len(commentary_segments))
+    missing_segments = (root_len - len(segments))
     for _ in range(missing_segments):
-        commentary_segments.append("")
-    return commentary_segments
+        segments.append("")
+    return segments
 
 
 def create_final_commentary_json(root_text, commentary_1, commentary_2, commentary_3):
@@ -87,7 +88,6 @@ def get_translation_segment(segment, AI_translation_json):
     for translation in AI_translation_json:
         if translation["root"] == segment:
             return translation["sanskrit"]
-        
 
 
 def serialize_translation(root_json, AI_translation_json):
