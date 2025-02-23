@@ -1,6 +1,10 @@
+import io
 import json 
 import requests
+import zipfile
+import shutil
 
+from pathlib import Path
 from typing import Dict 
 
 def read_json(file_path):
@@ -31,9 +35,34 @@ def get_pecha_metadata(pecha_id: str) -> Dict:
         return response.json()
     else:
         raise Exception(f"Failed to fetch metadata. Status code: {response.status_code}")
+
+
+def download_and_extract_pecha(pecha_id: str, output_path: Path) -> Path:
+    url = f'https://api-aq25662yyq-uc.a.run.app/pecha/{pecha_id}'
     
+    headers = {
+        'accept': 'application/zip'
+    }
+    response = requests.get(url, headers=headers, stream=True)
+    
+    if response.status_code == 200:
+        extracted_folder_name = f"{pecha_id}"
+        extracted_folder_path = output_path / pecha_id
+        
+        if extracted_folder_path.exists():
+            shutil.rmtree(extracted_folder_path)  
+
+        extracted_folder_path.mkdir(parents=True, exist_ok=True)
+        
+        with io.BytesIO(response.content) as zip_buffer:
+            with zipfile.ZipFile(zip_buffer, 'r') as zip_ref:
+                zip_ref.extractall(extracted_folder_path)
+        
+        return extracted_folder_path
+    else:
+        raise Exception(f"Failed to download pecha. Status code: {response.status_code}")
 
 if __name__ == "__main__":
     pecha_id = "I22734F80"
-    metadata = get_pecha_metadata(pecha_id)
-    print(metadata)
+    pecha_path = download_and_extract_pecha(pecha_id, Path("."))
+    print(pecha_path)
