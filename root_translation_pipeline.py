@@ -67,9 +67,9 @@ def prepare_content(chapter_map: Dict[int, List], segments: List[str]):
         content.append(chapter_content)
     return content
 
-def root_translation_pipeline(ai_json:Dict, root_json:Dict, metadata:Dict)->Dict:
+def root_translation_pipeline(ai_json:Dict, root_json:Dict, translation_name:str, metadata:Dict)->Dict:
     # Get Root translation only
-    root_translation: List[str] = get_segments(ai_json, "plaintext_translation")
+    root_translation: List[str] = get_segments(ai_json, translation_name)
 
     # Get chapter and segment number mapping
     chapter_segment_map: Dict[int, List] = get_chapter_and_segment_mapping(root_json)
@@ -78,7 +78,7 @@ def root_translation_pipeline(ai_json:Dict, root_json:Dict, metadata:Dict)->Dict
     content = prepare_content(chapter_segment_map, root_translation)
 
     # Replace Root JSON content and metadata
-    root_json["source"]["books"][0] = {**new_metadata, "content": content}
+    root_json["source"]["books"][0] = {**metadata, "content": content}
 
     return root_json
 
@@ -94,7 +94,6 @@ if __name__ == "__main__":
                 "completestatus": "in_progress",
                 "direction": "ltr"
     }
-    
-    new_root_json = root_translation_pipeline(ai_json, root_json, new_metadata)
+    new_root_json = root_translation_pipeline(ai_json, root_json, "plaintext_translation", new_metadata)
 
     write_json("new.json", new_root_json)
