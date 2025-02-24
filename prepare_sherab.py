@@ -70,6 +70,15 @@ def combine_aligned_segments():
         for idx, entry in enumerate(combined_commentaries):
             entry[f"{commentary_id}_commentary_text"] = curr_commentary_segments[idx]
 
+    # Add sanskrit text
+    sanskrit_json_path = "sherab_nyingpo_san.json"
+    if Path(sanskrit_json_path).exists():
+        sanskrit_segments = read_json(sanskrit_json_path)
+        for idx, entry in enumerate(combined_commentaries):
+            entry["sanskrit_text"] = sanskrit_segments[idx]
+    else:
+        print("Sanskrit json file not found")
+
     write_json("combined_commentaries.json", combined_commentaries)
 
 def get_commentary_segments():
@@ -97,4 +106,5 @@ def get_commentary_segments():
         
 
 if __name__ == "__main__":
-    get_commentary_segments()
+    get_aligned_segments()
+    combine_aligned_segments()
