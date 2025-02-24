@@ -1,7 +1,7 @@
 from pathlib import Path 
 
 from utils import download_pecha
-
+from stam import AnnotationStore
 
 from alignment_ann_transfer.commentary import CommentaryAlignmentTransfer
 from openpecha.pecha import Pecha 
@@ -29,12 +29,7 @@ works = [{
             "root_display_id": "I8BCEB363",
             "root_id": "I02DEEEA9",
             "commentary_id": "I7D9965EE"
-         },
-         {
-            "root_display_id": "I8BCEB363",
-            "root_id": "I63332C79",
-            "commentary_id": "I865C243B"
-         },
+         }
 ]
 
 def get_aligned_segments():
@@ -76,3 +71,30 @@ def combine_aligned_segments():
             entry[f"{commentary_id}_commentary_text"] = curr_commentary_segments[idx]
 
     write_json("combined_commentaries.json", combined_commentaries)
+
+def get_commentary_segments():
+    for work in works:
+        commentary_id = work["commentary_id"]
+        commentary_pecha = Pecha.from_path(download_pecha(commentary_id, Path("tmp")))
+
+        root_id = work["root_id"]
+        root_pecha = Pecha.from_path(download_pecha(root_id, Path("tmp")))
+
+        commentary_layer_path = next(commentary_pecha.layer_path.rglob("*.json"))
+        commentary_anns = list(AnnotationStore(file=str(commentary_layer_path)))
+
+        root_layer_path = next(root_pecha.layer_path.rglob("*.json"))
+        root_anns = list(AnnotationStore(file=str(root_layer_path)))
+
+        commentary_segments = []
+        for commentary_ann, root_ann in zip(commentary_anns, root_anns):
+            commentary_segments.append({
+                "commentary_text": str(commentary_ann),
+                "root_text": str(root_ann)
+            })
+        
+        write_json(f"{commentary_id}_segments.json", commentary_segments)
+        
+
+if __name__ == "__main__":
+    get_commentary_segments()
