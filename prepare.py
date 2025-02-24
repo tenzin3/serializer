@@ -1,0 +1,59 @@
+from pathlib import Path 
+
+from utils import download_pecha
+
+
+from alignment_ann_transfer.commentary import CommentaryAlignmentTransfer
+from openpecha.pecha import Pecha 
+from openpecha.utils import write_json
+
+# Function to replace keys
+def replace_keys(data, key_map):
+    return [
+        {key_map.get(k, k): v for k, v in entry.items()} 
+        for entry in data
+    ]
+
+
+works = [{
+            "root_display_id": "I8BCEB363",
+            "root_id": "I9943B599",
+            "commentary_id": "I22734F80"
+         },
+         {
+            "root_display_id": "I8BCEB363",
+            "root_id": "I85E31AAE",
+            "commentary_id": "I70BA77E2"
+         },
+         {
+            "root_display_id": "I8BCEB363",
+            "root_id": "I02DEEEA9",
+            "commentary_id": "I7D9965EE"
+         },
+         {
+            "root_display_id": "I8BCEB363",
+            "root_id": "I63332C79",
+            "commentary_id": "I865C243B"
+         },
+]
+
+for work in works:
+    root_display_id = work["root_display_id"]
+    root_id = work["root_id"]
+    commentary_id = work["commentary_id"]
+
+    root_display_pecha = Pecha.from_path(download_pecha(root_display_id, Path("tmp")))
+    root_pecha = Pecha.from_path(download_pecha(root_id, Path("tmp")))
+    commentary_pecha = Pecha.from_path(download_pecha(commentary_id, Path("tmp")))
+
+
+    # Define key mapping
+    key_map = {
+        "root_display_text": "root_display_text",
+        "commentary_text": f"{commentary_pecha.id}_commentary_text",
+    }
+
+    work = CommentaryAlignmentTransfer()
+    serialized_json = work.get_aligned_display_commentary(root_pecha, root_display_pecha, commentary_pecha)
+    serialized_json = replace_keys(serialized_json, key_map)
+    write_json(f"{commentary_pecha.id}.json", serialized_json)
