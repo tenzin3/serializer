@@ -37,7 +37,7 @@ def get_pecha_metadata(pecha_id: str) -> Dict:
         raise Exception(f"Failed to fetch metadata. Status code: {response.status_code}")
 
 
-def download_and_extract_pecha(pecha_id: str, output_path: Path) -> Path:
+def download_pecha(pecha_id: str, output_path: Path) -> Path:
     url = f'https://api-aq25662yyq-uc.a.run.app/pecha/{pecha_id}'
     
     headers = {
@@ -64,5 +64,5 @@ def download_and_extract_pecha(pecha_id: str, output_path: Path) -> Path:
 
 if __name__ == "__main__":
     pecha_id = "I22734F80"
-    pecha_path = download_and_extract_pecha(pecha_id, Path("."))
+    pecha_path = download_pecha(pecha_id, Path("."))
     print(pecha_path)
