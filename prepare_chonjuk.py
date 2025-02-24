@@ -15,10 +15,26 @@ def replace_keys(data, key_map):
     ]
 
 
-works = [{
+works = [
+         {
             "root_display_id": "I7C0673C3",
-            "root_id": "I08AAA464",
-            "commentary_id": "I5C8FDE6B"
+            "root_id": "I7AF39EB9",
+            "commentary_id": "I105531AD"
+         },
+         {
+            "root_display_id": "I7C0673C3",
+            "root_id": "I1B923993",
+            "commentary_id": "IB714D443"
+         },
+         {
+            "root_display_id": "I7C0673C3",
+            "root_id": "I27D25999",
+            "commentary_id": "I9294E222"
+         }, 
+         {
+            "root_display_id": "I7C0673C3",
+            "root_id": "I5C855E8C",
+            "commentary_id": "IFE85856E"
          }
 ]
 
@@ -65,8 +81,8 @@ def combine_aligned_segments():
         for work in works:
             commentary_id = work["commentary_id"]
             commentary_text = entry[f"{commentary_id}_commentary_text"]
-            combined_text = "\n".join(commentary_text)
-            entry[f"{commentary_id}_commentary_text"] = combined_text.strip()
+            combined_text = "\n".join(commentary_text) if isinstance(commentary_text, list) else commentary_text
+            entry[f"{commentary_id}_commentary_text"] = combined_text.strip() if combined_text else ""
 
     # Add sanskrit text
     sanskrit_json_path = "chonjuk_san.json"
@@ -119,3 +135,4 @@ def get_sanskrit_segments():
 if __name__ == "__main__":
     get_aligned_segments()
     combine_aligned_segments()
+    
