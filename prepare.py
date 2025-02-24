@@ -5,7 +5,7 @@ from utils import download_pecha
 
 from alignment_ann_transfer.commentary import CommentaryAlignmentTransfer
 from openpecha.pecha import Pecha 
-from openpecha.utils import write_json
+from openpecha.utils import write_json, read_json
 
 # Function to replace keys
 def replace_keys(data, key_map):
@@ -37,23 +37,42 @@ works = [{
          },
 ]
 
-for work in works:
-    root_display_id = work["root_display_id"]
-    root_id = work["root_id"]
-    commentary_id = work["commentary_id"]
+def get_aligned_segments():
+    for work in works:
+        root_display_id = work["root_display_id"]
+        root_id = work["root_id"]
+        commentary_id = work["commentary_id"]
 
-    root_display_pecha = Pecha.from_path(download_pecha(root_display_id, Path("tmp")))
-    root_pecha = Pecha.from_path(download_pecha(root_id, Path("tmp")))
-    commentary_pecha = Pecha.from_path(download_pecha(commentary_id, Path("tmp")))
+        root_display_pecha = Pecha.from_path(download_pecha(root_display_id, Path("tmp")))
+        root_pecha = Pecha.from_path(download_pecha(root_id, Path("tmp")))
+        commentary_pecha = Pecha.from_path(download_pecha(commentary_id, Path("tmp")))
 
 
-    # Define key mapping
-    key_map = {
-        "root_display_text": "root_display_text",
-        "commentary_text": f"{commentary_pecha.id}_commentary_text",
-    }
+        # Define key mapping
+        key_map = {
+            "root_display_text": "root_display_text",
+            "commentary_text": f"{commentary_pecha.id}_commentary_text",
+        }
 
-    work = CommentaryAlignmentTransfer()
-    serialized_json = work.get_aligned_display_commentary(root_pecha, root_display_pecha, commentary_pecha)
-    serialized_json = replace_keys(serialized_json, key_map)
-    write_json(f"{commentary_pecha.id}.json", serialized_json)
+        work = CommentaryAlignmentTransfer()
+        serialized_json = work.get_aligned_display_commentary(root_pecha, root_display_pecha, commentary_pecha)
+        serialized_json = replace_keys(serialized_json, key_map)
+        write_json(f"{commentary_pecha.id}.json", serialized_json)
+
+def combine_aligned_segments():
+        
+    # Combine all the commentaries
+    combined_commentaries = {}
+    for work in works:
+        commentary_id = work["commentary_id"]
+        if combined_commentaries == {}:
+            combined_commentaries = read_json(f"{commentary_id}.json")
+            continue 
+        curr_json = read_json(f"{commentary_id}.json")
+        curr_commentary_segments= [entry[f"{commentary_id}_commentary_text"] for entry in curr_json]
+        
+        # Add the commentary segments to the combined commentaries
+        for idx, entry in enumerate(combined_commentaries):
+            entry[f"{commentary_id}_commentary_text"] = curr_commentary_segments[idx]
+
+    write_json("combined_commentaries.json", combined_commentaries)
