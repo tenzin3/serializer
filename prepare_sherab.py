@@ -103,16 +103,16 @@ def get_commentary_segments():
         root_layer_path = next(root_pecha.layer_path.rglob("*.json"))
         root_anns = list(AnnotationStore(file=str(root_layer_path)))
 
-        commentary_segments = []
-        for commentary_ann, root_ann in zip(commentary_anns, root_anns):
-            commentary_segments.append({
-                "commentary_text": str(commentary_ann),
-                "root_text": str(root_ann)
-            })
-        
-        write_json(f"{commentary_id}_segments.json", commentary_segments)
+        segments = []
+        for i, commentary_ann in enumerate(commentary_anns):
+                root_ann = root_anns[i] if i < len(root_anns) else ""  # Use root_anns[i] if exists, otherwise empty string
+                segments.append({
+                    "commentary": str(commentary_ann).strip(),
+                    "root": str(root_ann).strip()
+                })
+                    
+        write_json(f"{commentary_id}_segments.json", segments)
         
 
 if __name__ == "__main__":
-    get_aligned_segments()
-    combine_aligned_segments()
+    get_commentary_segments()
