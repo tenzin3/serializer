@@ -70,6 +70,14 @@ def combine_aligned_segments():
         for idx, entry in enumerate(combined_commentaries):
             entry[f"{commentary_id}_commentary_text"] = curr_commentary_segments[idx]
 
+    # Convert commentary texts : List[str] -> str
+    for entry in combined_commentaries:
+        for work in works:
+            commentary_id = work["commentary_id"]
+            commentary_text = entry[f"{commentary_id}_commentary_text"]
+            combined_text = "\n".join(commentary_text)
+            entry[f"{commentary_id}_commentary_text"] = combined_text.strip()
+
     # Add sanskrit text
     sanskrit_json_path = "sherab_nyingpo_san.json"
     if Path(sanskrit_json_path).exists():
