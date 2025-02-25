@@ -93,6 +93,17 @@ def combine_aligned_segments():
     else:
         print("chonjuk_san.json Sanskrit json file not found")
 
+    
+    # Add the critical edition
+    critical_edition_path = "chojuk_with_ce.json"
+    if Path(critical_edition_path).exists():
+        critical_content = read_json(critical_edition_path)
+        critical_segments = [entry["critical_edition"] for entry in critical_content]
+        for idx, entry in enumerate(combined_commentaries):
+            entry["critical_edition"] = critical_segments[idx]
+    else:
+        print("chojuk_with_ce.json Critical Edition json file not found")
+
     write_json("combined_commentaries.json", combined_commentaries)
 
 def get_commentary_segments():
@@ -133,6 +144,8 @@ def get_sanskrit_segments():
     write_json("chonjuk_san.json", segments)
 
 if __name__ == "__main__":
-    get_aligned_segments()
-    combine_aligned_segments()
-    
+    # get_sanskrit_segments()
+    # get_aligned_segments()
+    # combine_aligned_segments()
+
+    get_commentary_segments()
