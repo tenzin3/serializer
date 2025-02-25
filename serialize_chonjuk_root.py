@@ -29,7 +29,7 @@ def remove_chapter_ann(segments: List[str]) -> List[str]:
         res.append(segment.strip())  # Strip any extra spaces left after removal
     return res
 
-def group_segments_by_chapter(segments: List[str]) -> List[List[str]]:
+def group_segments_by_chapter(segments: List[str], chapter_info: Dict) -> List[List[str]]:
     """
     Group segments into chapters. A new chapter starts when a segment begins
     with "ch" (case-insensitive). Segments that come before the first chapter marker
@@ -37,23 +37,15 @@ def group_segments_by_chapter(segments: List[str]) -> List[List[str]]:
     
     Returns a list of chapters, where each chapter is a list of segments.
     """
-    chapters = []
-    current_chapter = []
+
+    chapterized_segments = []
+    for chapter_num, segment_indices in chapter_info.items():
+        chapter = []
+        for idx in segment_indices:
+            chapter.append(segments[idx-1])
+        chapterized_segments.append(chapter)
+    return chapterized_segments
     
-    for seg in segments:
-        # Check if the segment is a chapter marker (e.g., "ch-1", "Ch-2", etc.)
-        if re.match(r"(?i)^ch[-\s]?\d+", seg):
-            # If there's already content in current_chapter, start a new chapter group.
-            if current_chapter:
-                chapters.append(current_chapter)
-            current_chapter = [seg]
-        else:
-            current_chapter.append(seg)
-            
-    if current_chapter:
-        chapters.append(current_chapter)
-    
-    return chapters
 
 def serialize_root():
     root_id = "I7C0673C3"
@@ -67,11 +59,9 @@ def serialize_root():
     # Remove chapter annotation
     segments = remove_chapter_ann(tgt_content)
     # Put into chapters
-    chapterized_segments = group_segments_by_chapter(segments)
+    chapterized_segments = group_segments_by_chapter(segments, chapter_info)
     
     serialized["target"]["books"][0]["content"] = chapterized_segments
-
-
 
     write_json("chapter.json", chapter_info)
     write_json("jsons/chonjuk/root/chonjuk_root.json", serialized)
