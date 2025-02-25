@@ -19,7 +19,8 @@ ENGLISH_TITLE = "The Heart of the Perfection of Wisdom"
 EN_TITLE_MAP = {
         "translation" : f"{ENGLISH_TITLE} AI Draft, Feb 2025",
         "word by word translation": f"{ENGLISH_TITLE} Word by Word, Feb 2025",  
-        "plaintext_translation": f"{ENGLISH_TITLE} Easy to Read, Feb 2025"
+        "plaintext_translation": f"{ENGLISH_TITLE} Easy to Read, Feb 2025",
+        "combined_commentary": f"{ENGLISH_TITLE} Combined Commentary, Feb 2025"
 }
 
 CHINESE_TITLE = "般若波羅密多心經"
@@ -30,6 +31,13 @@ ZH_TITLE_MAP = {
         "combined_commentary": f"{CHINESE_TITLE} Combined Commentary, Feb 2025"
 }
 
+
+def remove_symbols(text: str) -> str:
+    """
+    Remove hashtag
+    """
+    text = text.replace("#", "")
+    return text
 
 def normalize_escape_chars(text: str) -> str:
     text = text.replace('\"', "'").replace("\\/", "/")
@@ -56,6 +64,8 @@ def serialize_en_translations():
             # normalize escape characters
             text = translation[key]
             text = normalize_escape_chars(text)
+            text = remove_symbols(text)
+            text = text.strip()
             res[key].append(text)
     
     new_src_books = []
@@ -96,6 +106,8 @@ def serialize_zh_translations():
             # normalize escape characters
             text = translation[key]
             text = normalize_escape_chars(text)
+            text = remove_symbols(text)
+            text = text.strip()
             res[key].append(text)
     
     new_src_books = []
