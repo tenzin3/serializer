@@ -1,5 +1,9 @@
 from pathlib import Path 
 
+cur_dir = Path(__file__).parent
+import sys
+sys.path.append(str(cur_dir.parent))
+
 from utils import download_pecha
 from stam import AnnotationStore
 
@@ -113,6 +117,17 @@ def get_commentary_segments():
                     
         write_json(f"{commentary_id}_segments.json", segments)
         
+def get_sanskrit_segments():
+    pecha_id = "I542210F9"
+    pecha = Pecha.from_path(download_pecha(pecha_id, Path("tmp")))
+
+
+    layer_path = next(pecha.layer_path.rglob("*.json"))
+    anns = list(AnnotationStore(file=str(layer_path)))
+
+    segments = [str(ann) for ann in anns]
+                
+    write_json("jsons/sherab/root/sherab_san.json", segments)
 
 if __name__ == "__main__":
-    get_commentary_segments()
+    get_sanskrit_segments()
