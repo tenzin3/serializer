@@ -38,6 +38,9 @@ def serialize_commentaries():
         # Get Commentary Alignment 
         work = CommentaryAlignmentTransfer()
         tgt_content = work.get_serialized_commentary(root_pecha, root_display_pecha, commentary_pecha)
+        
+        # Strip the tgt content
+        tgt_content = [content.strip() for content in tgt_content]
         serialized["target"]["books"][0]["content"] = [tgt_content]
         write_json(f"jsons/sherab/commentary/{commentary_id}.json", serialized)
 
