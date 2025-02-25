@@ -63,6 +63,6 @@ def download_pecha(pecha_id: str, output_path: Path) -> Path:
         raise Exception(f"Failed to download pecha. Status code: {response.status_code}")
 
 if __name__ == "__main__":
-    pecha_id = "I5339F440"
+    pecha_id = "I8BCEB363"
     pecha_path = download_pecha(pecha_id, Path("."))
     print(pecha_path)

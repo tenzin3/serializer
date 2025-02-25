@@ -5,7 +5,6 @@ from openpecha.pecha import Pecha
 from openpecha.pecha.serializers.pecha_db.commentary.simple_commentary import SimpleCommentarySerializer
 from alignment_ann_transfer.commentary import CommentaryAlignmentTransfer
 
-
 works = [{
             "root_display_id": "I8BCEB363",
             "root_id": "I9943B599",
@@ -31,11 +30,10 @@ def serialize_commentaries():
         root_id = work["root_id"]
         root_pecha = Pecha.from_path(download_pecha(root_id, Path("tmp")))
 
-        # root_display_id = work["root_display_id"]
-        root_display_pecha = Pecha.from_path(Path("tmp/I5339F440"))
+        root_display_id = work["root_display_id"]
+        root_display_pecha = Pecha.from_path(download_pecha(root_display_id, Path("tmp")))
         
         serialized = SimpleCommentarySerializer().serialize(commentary_pecha, root_display_pecha.metadata.title)
-        
         
         # Get Commentary Alignment 
         work = CommentaryAlignmentTransfer()
