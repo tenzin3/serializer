@@ -1,5 +1,5 @@
 from pathlib import Path 
-from utils import download_pecha, write_json
+from utils import download_pecha, write_json, read_json
 from typing import List, Dict 
 
 from openpecha.pecha import Pecha 
@@ -18,12 +18,13 @@ def serialize_commentaries(work_ids: List[Dict], output_path:str):
         root_display_id = work["root_display_id"]
         root_display_pecha = Pecha.from_path(download_pecha(root_display_id, Path("tmp")))
         
-        serialized = SimpleCommentarySerializer().serialize(commentary_pecha, root_display_pecha.metadata.title)
-        
+        # Get serialized JSON with metadata
+        serialized = read_json(f"jsons/chonjuk/commentary/{commentary_id}.json")
+
         # Get Commentary Alignment 
         work = CommentaryAlignmentTransfer()
         tgt_content = work.get_serialized_commentary(root_pecha, root_display_pecha, commentary_pecha)
-        
+
         # Strip the tgt content
         tgt_content = [content.strip() for content in tgt_content]
         serialized["target"]["books"][0]["content"] = [tgt_content]
@@ -36,6 +37,16 @@ if __name__ == "__main__":
             "root_display_id": "I7C0673C3",
             "root_id": "I7AF39EB9",
             "commentary_id": "I105531AD"
+         },
+         {
+            "root_display_id": "I7C0673C3",
+            "root_id": "I1B923993",
+            "commentary_id": "IB714D443"
+         },
+         {
+            "root_display_id": "I7C0673C3",
+            "root_id": "I27D25999",
+            "commentary_id": "I9294E222"
          }
     ]
 

@@ -98,10 +98,10 @@ def get_commentary_mapping(commentary_content: List[str]):
 
 
 if __name__ == "__main__":
-    content = read_json("downloads/sherab/ai_commentaries/I7D9965EE_en.json")
+    content = read_json("downloads/sherab/ai_commentaries/I22734F80_zh.json")
     commentary_translation = parse_translated_sherab_commentary(content)
     
-    commentary_serialized = read_json("jsons/sherab/commentary/I7D9965EE.json")
+    commentary_serialized = read_json("jsons/sherab/commentary/I22734F80.json")
     commentary_content = commentary_serialized["target"]["books"][0]["content"][0]
     mapping = get_commentary_mapping(commentary_content)
 
