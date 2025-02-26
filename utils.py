@@ -1,11 +1,12 @@
 import io
 import json 
+import re 
 import requests
 import zipfile
 import shutil
 
 from pathlib import Path
-from typing import Dict 
+from typing import Dict, List 
 
 def read_json(file_path):
     with open(file_path, encoding="utf-8") as f:
@@ -65,10 +66,46 @@ def download_pecha(pecha_id: str, output_path: Path) -> Path:
 def parse_translated_sherab_commentary(content: Dict):
     segments = []
     for c in content:
-        segments.append(c["commentary"])
+        text = c["commentary"]
+        text = normalize_escape_chars(text)
+        text = remove_symbols(text)
+        segments.append(text)
     return segments
+
+
+def remove_symbols(text: str) -> str:
+    """
+    Remove hashtag
+    """
+    text = text.replace("#", "")
+    return text
+
+def normalize_escape_chars(text: str) -> str:
+    text = text.replace('\"', "'").replace("\\/", "/")
+    return text
+
+def get_commentary_mapping(commentary_content: List[str]):
+    mapping = []
+
+    pattern = re.compile(r'(<\d+>)(<\d+>)')
+    for content in commentary_content:
+        match = pattern.search(content)
+        if match:
+            mapping.append(f"{match.group(1)}{match.group(2)}")
+        else:
+            mapping.append("")
+    return mapping
+
 
 if __name__ == "__main__":
     content = read_json("downloads/sherab/ai_commentaries/I7D9965EE_en.json")
-    res = parse_translated_sherab_commentary(content)
-    write_json("temp.json", res)
+    commentary_translation = parse_translated_sherab_commentary(content)
+    
+    commentary_serialized = read_json("jsons/sherab/commentary/I7D9965EE.json")
+    commentary_content = commentary_serialized["target"]["books"][0]["content"][0]
+    mapping = get_commentary_mapping(commentary_content)
+
+    mapped_translation = []
+    for map, content in zip(mapping, commentary_translation):
+        mapped_translation.append(f"{map}{content}")
+    write_json("mapped_commentary.json", mapped_translation)
