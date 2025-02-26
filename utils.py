@@ -62,7 +62,13 @@ def download_pecha(pecha_id: str, output_path: Path) -> Path:
     else:
         raise Exception(f"Failed to download pecha. Status code: {response.status_code}")
 
+def parse_translated_sherab_commentary(content: Dict):
+    segments = []
+    for c in content:
+        segments.append(c["commentary"])
+    return segments
+
 if __name__ == "__main__":
-    pecha_id = "I8BCEB363"
-    pecha_path = download_pecha(pecha_id, Path("."))
-    print(pecha_path)
+    content = read_json("downloads/sherab/ai_commentaries/I7D9965EE_en.json")
+    res = parse_translated_sherab_commentary(content)
+    write_json("temp.json", res)
