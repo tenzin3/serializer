@@ -16,6 +16,26 @@ from utils import read_json, write_json, download_pecha, normalize_escape_chars,
 from openpecha.pecha import Pecha 
 from openpecha.pecha.serializers.pecha_db.translation import TranslationSerializer
 
+def group_commentary_segments_by_chapter(segments: List[str], chapter_info: Dict) -> List[List[str]]:
+    """
+    Group segments into chapters. A new chapter starts when a segment begins
+    with "ch" (case-insensitive). Segments that come before the first chapter marker
+    will be grouped together.
+    
+    Returns a list of chapters, where each chapter is a list of segments.
+    """
+
+    chapterized_segments = []
+    for chapter_num, segment_indices in chapter_info.items():
+        chapter = []
+        counter = 1
+        for idx in segment_indices:
+            curr_segment = segments[idx-1]
+            curr_segment = f"<{chapter_num}><{counter}>" + curr_segment
+            chapter.append(curr_segment)
+            counter += 1
+        chapterized_segments.append(chapter)
+    return chapterized_segments
 
 def get_chapter_info(segments:List[str])->List[List[str]]:
     res = {}
@@ -84,8 +104,8 @@ if __name__ == "__main__":
     # san_chapterized_segments = group_segments_by_chapter(san_segments, chapter_info)
     # write_json("jsons/chonjuk/root/chonjuk_san_chapterized.json", san_chapterized_segments)
 
-    translation_content = read_json("downloads/data_chonjuk/chunjuk_en_translations.json")
-    keys = ["plaintext_translation", "combined_commentary"]
+    translation_content = read_json("downloads/data_chonjuk/chunjuk_final_cleaned.json")
+    keys = ["translation", "word by word translation", "plaintext_translation", "combined_commentary"]
 
     res = {k:[] for k in keys}
     for content in translation_content:
