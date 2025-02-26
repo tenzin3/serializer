@@ -79,8 +79,8 @@ def combine_aligned_segments():
         for work in works:
             commentary_id = work["commentary_id"]
             commentary_text = entry[f"{commentary_id}_commentary_text"]
-            combined_text = "\n".join(commentary_text)
-            entry[f"{commentary_id}_commentary_text"] = combined_text.strip()
+            combined_text = "\n".join(commentary_text) if isinstance(commentary_text, list) else commentary_text
+            entry[f"{commentary_id}_commentary_text"] = combined_text.strip() if combined_text else ""
 
     # Add sanskrit text
     sanskrit_json_path = "sherab_nyingpo_san.json"
