@@ -5,8 +5,6 @@ from pecha_uploader.config import Destination_url
 from utils import read_json
 
 
-dir_path = Path("jsons/chonjuk/commentary")
 
-for json_file in dir_path.glob("*.json"):
-    input = read_json(json_file)
-    upload(input, Destination_url.PRODUCTION, True)
+input = read_json("jsons/chonjuk/commentary/I105531AD.json")
+upload(input, Destination_url.STAGING, True)
