@@ -1,12 +1,21 @@
 import re 
+import io
+import json 
+import re 
+import requests
+import zipfile
+import shutil
+
 from pathlib import Path 
+
 from typing import List, Dict
-from utils import download_pecha, write_json, read_json
+
+from utils import read_json, write_json, download_pecha
+
 
 from openpecha.pecha import Pecha 
 from openpecha.pecha.serializers.pecha_db.translation import TranslationSerializer
 
-from utils import download_pecha
 
 def get_chapter_info(segments:List[str])->List[List[str]]:
     res = {}
@@ -69,8 +78,19 @@ def serialize_root():
 
 if __name__ == "__main__":
     # serialize_root()
-    san_segments = read_json("jsons/chonjuk/root/chonjuk_san_segments.json")
+    # san_segments = read_json("jsons/chonjuk/root/chonjuk_san_segments.json")
     chapter_info = read_json("jsons/chonjuk/chapter.json")
 
-    san_chapterized_segments = group_segments_by_chapter(san_segments, chapter_info)
-    write_json("jsons/chonjuk/root/chonjuk_san_chapterized.json", san_chapterized_segments)
+    # san_chapterized_segments = group_segments_by_chapter(san_segments, chapter_info)
+    # write_json("jsons/chonjuk/root/chonjuk_san_chapterized.json", san_chapterized_segments)
+
+    translation_content = read_json("downloads/data_chonjuk/chunjuk_en_translations.json")
+    keys = ["plaintext_translation", "combined_commentary"]
+
+    res = {k:[] for k in keys}
+    for content in translation_content:
+        for key in keys:
+            res[key].append(content[key])
+    
+    for k, v in res.items():
+        write_json(f"{k}.json", v)
