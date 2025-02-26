@@ -10,7 +10,7 @@ from pathlib import Path
 
 from typing import List, Dict
 
-from utils import read_json, write_json, download_pecha
+from utils import read_json, write_json, download_pecha, normalize_escape_chars, remove_symbols
 
 
 from openpecha.pecha import Pecha 
@@ -90,7 +90,11 @@ if __name__ == "__main__":
     res = {k:[] for k in keys}
     for content in translation_content:
         for key in keys:
-            res[key].append(content[key])
+            text = content[key]
+            text = normalize_escape_chars(text)
+            text = remove_symbols(text)
+            res[key].append(text)
     
-    for k, v in res.items():
-        write_json(f"{k}.json", v)
+    for k, segments in res.items():
+        chapterized_segments = group_segments_by_chapter(segments, chapter_info)
+        write_json(f"{k}.json", chapterized_segments)
