@@ -25,18 +25,21 @@ def chapterize_chonjuk_segments(segments: List[str]) -> List[List[str]]:
    curr_chapter = []
    last_chapter = 1
    for segment in segments:
-      pattern = re.compile(r'<(\d+)><(\d+)>')
+      pattern = re.compile(r'<(\d+)><(\d+)>(.*)')
       match = pattern.search(segment)
       if match:
          segment_num = int(match.group(2))
+         text = match.group(3)
          
+
          chapter_num = get_chapter_num(segment_num)
+         curr_segment = f"<{chapter_num}><{(segment_num-chapter_info[str(chapter_num)][0])+1}>{text}"
          if chapter_num != last_chapter:
                res.append(curr_chapter)
-               curr_chapter = []
+               curr_chapter = [curr_segment]
                last_chapter = chapter_num
          else:
-            curr_chapter.append(segment)
+            curr_chapter.append(curr_segment)
       else:
          curr_chapter.append(segment)
    if curr_chapter:
