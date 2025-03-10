@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # write_json("jsons/chonjuk/root/chonjuk_san_chapterized.json", san_chapterized_segments)
 
     translation_content = read_json("downloads/data_chonjuk/chunjuk_final_cleaned.json")
-    keys = ["translation", "word by word translation", "plaintext_translation", "combined_commentary"]
+    keys = ["combined_commentary"]
 
     res = {k:[] for k in keys}
     for content in translation_content:
@@ -116,5 +116,5 @@ if __name__ == "__main__":
             res[key].append(text)
     
     for k, segments in res.items():
-        chapterized_segments = group_segments_by_chapter(segments, chapter_info)
+        chapterized_segments = group_commentary_segments_by_chapter(segments, chapter_info)
         write_json(f"{k}.json", chapterized_segments)
