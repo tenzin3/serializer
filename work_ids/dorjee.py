@@ -17,3 +17,17 @@ works = [
             "commentary_id": "IC4AB9E0B"
          }
 ]
+
+
+root_translation_works = [
+         {
+            "root_display_id": "ID4931BF2",
+            "root_id": "I665430B4",
+            "root_translation_id": "IF915B644"
+         },
+         {
+            "root_display_id": "ID4931BF2",
+            "root_id": "I0D793993",
+            "root_translation_id": "IE0BB493C"
+         },
+]
